@@ -40,5 +40,6 @@ describe("Week9 GoFundMe Test", function () {
     await contract.connect(signer2).donate({value: donateAmount});
 
     expect(await ethers.provider.getBalance(contract)).to.equal(donateAmount);
+    expect(await contract.getDepositorAmount(signer2.address)).to.equals(donateAmount);
   });
 });

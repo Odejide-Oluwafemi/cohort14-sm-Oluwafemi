@@ -10,10 +10,9 @@ contract GoFundMe {
   uint256 public minimumSavingAmount;
 
   uint256 public amountOfTimesSaved;
-  uint256 public amountOfTimesDonated;
 
   mapping (uint256 id  => mapping (uint256 amountSaved => uint256 timeDeposited)) public savings;
-  mapping (uint256 id  => mapping (uint256 amountSaved => uint256 timeDeposited)) public donations;
+  mapping (address depositor => uint256 amountSaved) public donations;
 
   constructor(uint256 _minimumSavingAmount) {
     i_owner = msg.sender;
@@ -45,14 +44,17 @@ contract GoFundMe {
     require(msg.sender != i_owner, "Owner cannot donate to himself");
     require(msg.value > 0, "Cannot Donate Zero ETH");
 
-    amountOfTimesDonated = amountOfTimesDonated + 1;
-    donations[amountOfTimesDonated][msg.value] = block.timestamp;
+    donations[msg.sender] = msg.value;
 
     emit Donated(msg.sender, msg.value);
   }
 
   function getMinimunSavingAmount() external view returns (uint256) {
     return minimumSavingAmount;
+  }
+  
+  function getDepositorAmount(address donator) external view returns (uint256) {
+    return donations[donator];
   }
 
   receive() external payable {
