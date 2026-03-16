@@ -7,7 +7,7 @@ contract GoFundMe {
 
   address immutable i_owner;
 
-  uint256 minimumSavingAmount;
+  uint256 public minimumSavingAmount;
 
   uint256 public amountOfTimesSaved;
   uint256 public amountOfTimesDonated;
@@ -49,6 +49,10 @@ contract GoFundMe {
     donations[amountOfTimesDonated][msg.value] = block.timestamp;
 
     emit Donated(msg.sender, msg.value);
+  }
+
+  function getMinimunSavingAmount() external view returns (uint256) {
+    return minimumSavingAmount;
   }
 
   receive() external payable {
