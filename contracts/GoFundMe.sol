@@ -9,9 +9,7 @@ contract GoFundMe {
 
   uint256 public minimumSavingAmount;
 
-  uint256 public amountOfTimesSaved;
-
-  mapping (uint256 id  => mapping (uint256 amountSaved => uint256 timeDeposited)) public savings;
+  uint256 public totalAmountDeposited;
   mapping (address depositor => uint256 amountSaved) public donations;
 
   constructor(uint256 _minimumSavingAmount) {
@@ -33,9 +31,7 @@ contract GoFundMe {
   function save() external payable onlyOwner {
     require(msg.value >= minimumSavingAmount, "Deposit too low");
 
-    amountOfTimesSaved = amountOfTimesSaved + 1;
-
-    savings[amountOfTimesSaved][msg.value] = block.timestamp;
+    totalAmountDeposited = totalAmountDeposited + msg.value;
 
     emit Saved(msg.value);
   }
@@ -49,8 +45,20 @@ contract GoFundMe {
     emit Donated(msg.sender, msg.value);
   }
 
+  function withdraw() external onlyOwner {
+    (bool success, ) = i_owner.call{value: address(this).balance}("");
+
+    require(success);
+
+    totalAmountDeposited = address(this).balance;
+  }
+
   function getMinimunSavingAmount() external view returns (uint256) {
     return minimumSavingAmount;
+  }
+  
+  function getTotalAmountDeposited() external view returns (uint256) {
+    return totalAmountDeposited;
   }
   
   function getDepositorAmount(address donator) external view returns (uint256) {

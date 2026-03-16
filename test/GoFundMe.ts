@@ -42,4 +42,15 @@ describe("Week9 GoFundMe Test", function () {
     expect(await ethers.provider.getBalance(contract)).to.equal(donateAmount);
     expect(await contract.getDepositorAmount(signer2.address)).to.equals(donateAmount);
   });
+
+  it("Withdraws by Owner", async function() {
+    const { signer2, contract } = await networkHelpers.loadFixture(fixture);
+
+    const donateAmount = ethers.parseEther("1");
+
+    await contract.connect(signer2).donate({value: donateAmount});
+
+    expect(await ethers.provider.getBalance(contract)).to.equal(donateAmount);
+    expect(await contract.getDepositorAmount(signer2.address)).to.equals(donateAmount);
+  });
 });
