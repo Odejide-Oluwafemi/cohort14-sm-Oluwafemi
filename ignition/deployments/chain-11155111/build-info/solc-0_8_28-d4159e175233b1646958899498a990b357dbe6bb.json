@@ -1,0 +1,39 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-d4159e175233b1646958899498a990b357dbe6bb",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/GoFundMe.sol": "project/contracts/GoFundMe.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/GoFundMe.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\r\npragma solidity ^0.8.28;\r\n\r\ncontract GoFundMe {\r\n  event Saved(uint256 amount);\r\n  event Donated(address indexed donator, uint256 amount);\r\n\r\n  address immutable i_owner;\r\n\r\n  uint256 public minimumSavingAmount;\r\n\r\n  uint256 public amountOfTimesSaved;\r\n  uint256 public amountOfTimesDonated;\r\n\r\n  mapping (uint256 id  => mapping (uint256 amountSaved => uint256 timeDeposited)) public savings;\r\n  mapping (uint256 id  => mapping (uint256 amountSaved => uint256 timeDeposited)) public donations;\r\n\r\n  constructor(uint256 _minimumSavingAmount) {\r\n    i_owner = msg.sender;\r\n\r\n    minimumSavingAmount = _minimumSavingAmount;\r\n  }\r\n\r\n  modifier onlyOwner() {\r\n    require(msg.sender == i_owner, \"Only Owner can call this\");\r\n\r\n    _;\r\n  }\r\n\r\n  function setMinimumSavingAmount(uint256 _minimumSavingAmount) external onlyOwner {\r\n    minimumSavingAmount = _minimumSavingAmount;\r\n  }\r\n\r\n  function save() external payable onlyOwner {\r\n    require(msg.value >= minimumSavingAmount, \"Deposit too low\");\r\n\r\n    amountOfTimesSaved = amountOfTimesSaved + 1;\r\n\r\n    savings[amountOfTimesSaved][msg.value] = block.timestamp;\r\n\r\n    emit Saved(msg.value);\r\n  }\r\n\r\n  function donate() public payable {\r\n    require(msg.sender != i_owner, \"Owner cannot donate to himself\");\r\n    require(msg.value > 0, \"Cannot Donate Zero ETH\");\r\n\r\n    amountOfTimesDonated = amountOfTimesDonated + 1;\r\n    donations[amountOfTimesDonated][msg.value] = block.timestamp;\r\n\r\n    emit Donated(msg.sender, msg.value);\r\n  }\r\n\r\n  function getMinimunSavingAmount() external view returns (uint256) {\r\n    return minimumSavingAmount;\r\n  }\r\n\r\n  receive() external payable {\r\n    donate();\r\n  }\r\n\r\n  fallback() external payable {\r\n    donate();\r\n  }\r\n}"
+      }
+    }
+  }
+}
