@@ -23,12 +23,22 @@ describe("Week9 GoFundMe Test", function () {
   });
 
   it("Should save", async function () {
-    const { signer, contract, minimumSavingsAmount } = await networkHelpers.loadFixture(fixture);
+    const { contract } = await networkHelpers.loadFixture(fixture);
 
     const saveAmount = ethers.parseEther("1");
 
     await contract.save({value: saveAmount});
 
     expect(await ethers.provider.getBalance(contract)).to.equal(saveAmount);
+  });
+
+  it("Should deposit from external account", async function () {
+    const { signer2, contract } = await networkHelpers.loadFixture(fixture);
+
+    const donateAmount = ethers.parseEther("1");
+
+    await contract.connect(signer2).donate({value: donateAmount});
+
+    expect(await ethers.provider.getBalance(contract)).to.equal(donateAmount);
   });
 });
